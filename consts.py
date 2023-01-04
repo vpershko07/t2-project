@@ -1,0 +1,12 @@
+CSV_DIR = "./csv"
+DB_PATH = "./db.sqlite3"
+
+T2_CURRENT_USERS_TABLE = "t2_current_users"
+# TWITTER_USERS_TABLE = "twitter_users"
+TWITTER_USERS_TABLE = "twitter_profiles"
+# CONNECTIVITY_TABLE = "connectivity"
+CONNECTIVITY_TABLE = "connectivity_data"
+OLD_WAITLIST_TABLE = "old_waitlist_sample"
+NEW_WAITLIST_TABLE = "new_waitlist_sample"
+ALREADY_CRAWLED_TABLE = "already_crawled"
+NEW_WAITLIST_CONNECTION_TABLE = "new_waitlist_connection"
