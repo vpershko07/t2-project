@@ -25,16 +25,27 @@ class T2Repository:
         return self.cursor.fetchall()
 
 
-    def find_next_most_connected_users_on_wait_list_updated(self, limit=200):
-        
+    def find_next_most_connected_users_on_wait_list_updated(self, limit=200):        
         self.cursor.execute(f"SELECT user_twitter_handle, GROUP_CONCAT(target_handle) as target_handles, count(*) as following FROM {CONNECTIVITY_TABLE} JOIN {T2_CURRENT_USERS_TABLE} on target_handle = twitter_username WHERE  user_twitter_handle not in (SELECT twitter_username FROM {T2_CURRENT_USERS_TABLE}) GROUP BY user_twitter_handle order by count(*) desc limit {limit}")
         return self.cursor.fetchall()
 
+    def find_recommondation_new_waitlist_connection(self, twitterhandle):
+        self.cursor.execute(f"SELECT GROUP_CONCAT(t2_username) as t2_usernames FROM {T2_CURRENT_USERS_TABLE} JOIN {NEW_WAITLIST_CONNECTION_TABLE} on twitter_username = user_handle AND followed_by_handle=?", (twitterhandle,))
+        return self.cursor.fetchall()
+
+    def find_recommondation_connection_list(self, twitterhandle):
+        self.cursor.execute(f"SELECT GROUP_CONCAT(t2_username) as t2_usernames FROM {T2_CURRENT_USERS_TABLE} JOIN {CONNECTIVITY_TABLE} on twitter_username = target_handle AND user_twitter_handle=?", (twitterhandle,))
+        return self.cursor.fetchall()
 
     def get_t2_user_by_twitter_username(self, twitter):
         self.cursor.execute(f"SELECT * FROM {T2_CURRENT_USERS_TABLE} WHERE twitter_username = ?", (twitter,))
         return self.cursor.fetchone()
+    
+    def get_name_by_twitter_username(self, twitter):
+        self.cursor.execute(f"SELECT name FROM {TWITTER_USERS_TABLE} WHERE username = ?", (twitter,))
+        return self.cursor.fetchone()
 
+    
     def get_twitter_user_by_username(self, twitter):
         self.cursor.execute(f"SELECT * FROM {TWITTER_USERS_TABLE} WHERE username = ?", (twitter,))
         return self.cursor.fetchone()
