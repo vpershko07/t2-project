@@ -25,11 +25,11 @@ def process_page(page, twitter_handle, twitter_id,friend):
 def crawl(twitter_handle,twitter_id,api):
     """ Crawling user friends/followers """
     try:
-        for idx, page in enumerate(tweepy.Cursor(api.get_friends, screen_name  = twitter_handle, skip_status= True, include_user_entities= False).pages()):
+        for idx, page in enumerate(tweepy.Cursor(api.get_friends, screen_name  = twitter_handle, skip_status= True, include_user_entities= False, count=200).pages()):
             process_page(page, twitter_handle, twitter_id, friend=True)
             print(f"[INFO] IN HANDLE {twitter_handle}, IN PAGE NUMBER {idx} OF FRIENDS")
 
-        for idx, page in enumerate(tweepy.Cursor(api.get_followers, screen_name = twitter_handle, skip_status=True, include_user_entities=False).pages()):
+        for idx, page in enumerate(tweepy.Cursor(api.get_followers, screen_name = twitter_handle, skip_status=True, include_user_entities=False, count=200).pages()):
             process_page(page, twitter_handle, twitter_id, friend=False)
             print(f"[INFO] IN HANDLE {twitter_handle}, IN PAGE NUMBER {idx} OF FOLLOWING")
 
