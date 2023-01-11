@@ -30,11 +30,11 @@ class T2Repository:
         return self.cursor.fetchall()
 
     def find_recommondation_new_waitlist_connection(self, twitterhandle):
-        self.cursor.execute(f"SELECT GROUP_CONCAT(t2_username) as t2_usernames FROM {T2_CURRENT_USERS_TABLE} JOIN {NEW_WAITLIST_CONNECTION_TABLE} on twitter_username = user_handle AND followed_by_handle=?", (twitterhandle,))
+        self.cursor.execute(f"SELECT GROUP_CONCAT(DISTINCT t2_username) as t2_usernames FROM {T2_CURRENT_USERS_TABLE} JOIN {NEW_WAITLIST_CONNECTION_TABLE} on twitter_username = user_handle AND followed_by_handle=?", (twitterhandle,))
         return self.cursor.fetchall()
 
     def find_recommondation_connection_list(self, twitterhandle):
-        self.cursor.execute(f"SELECT GROUP_CONCAT(t2_username) as t2_usernames FROM {T2_CURRENT_USERS_TABLE} JOIN {CONNECTIVITY_TABLE} on twitter_username = target_handle AND user_twitter_handle=?", (twitterhandle,))
+        self.cursor.execute(f"SELECT GROUP_CONCAT(DISTINCT t2_username) as t2_usernames FROM {T2_CURRENT_USERS_TABLE} JOIN {CONNECTIVITY_TABLE} on twitter_username = target_handle AND user_twitter_handle=?", (twitterhandle,))
         return self.cursor.fetchall()
 
     def get_t2_user_by_twitter_username(self, twitter):

@@ -27,12 +27,18 @@ def main(t2handle, twitterhandle):
 
     try:
         recommendation_newwatlist_connectons = repository.find_recommondation_new_waitlist_connection(twitterhandle)[0]['t2_usernames'].split(',')
+    except AttributeError:
+        print("[WARNING] no connections in new waitlist connections")
+        recommendation_newwatlist_connectons = []
     except Exception as e:
-        print(f"[ERROR] in new waitlist connections {e}")
+        print(f"[WARNING] in new waitlist connections {e}")
         recommendation_newwatlist_connectons = []
 
     try:
         recommendation_connectivity_data = repository.find_recommondation_connection_list(twitterhandle)[0]['t2_usernames'].split(',')
+    except AttributeError:
+        print("[WARNING] no connections in connectivity data")
+        recommendation_connectivity_data = []
     except Exception as e:
         print(f"[ERROR] in connectivity data connections {e}")
         recommendation_connectivity_data = []
