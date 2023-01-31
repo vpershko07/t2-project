@@ -78,7 +78,7 @@ def main(twitterhandle, connections):
             if (not repository.is_twitter_handle_crawled(waiter_handle)) and waiter_handle is not None:
                 waiter_id = repository.get_user_profile_id(waiter_handle)
                 if waiter_id is None:
-                    waiter_id = user.__json['id']
+                    waiter_id = user._json['id']
                 print("[INFO] CRAWLING USER REALTIONSHIPS..")
                 crawl(waiter_handle,waiter_id,api)
             else:
