@@ -29,6 +29,10 @@ class T2Repository:
         self.cursor.execute(f"SELECT user_twitter_handle, GROUP_CONCAT(target_handle) as target_handles, count(*) as following FROM {CONNECTIVITY_TABLE} JOIN {T2_CURRENT_USERS_TABLE} on target_handle = twitter_username WHERE  user_twitter_handle not in (SELECT twitter_username FROM {T2_CURRENT_USERS_TABLE}) GROUP BY user_twitter_handle order by count(*) desc limit {limit}")
         return self.cursor.fetchall()
 
+    def find_next_most_connected_users_on_wait_list_updated_v2(self, limit=200):
+        self.cursor.execute(f"SELECT user_twitter_handle,GROUP_CONCAT(target_handle) as target_handles,count(*) as following FROM {CONNECTIVITY_TABLE} JOIN {T2_CURRENT_USERS_TABLE} on `target_twitter_info.twitter_id` = pid WHERE user_twitter_handle not in (SELECT ph FROM {T2_CURRENT_USERS_TABLE}) GROUP BY user_twitter_handle order by count(*) desc limit {limit}")
+        return self.cursor.fetchall()
+
     def find_recommondation_new_waitlist_connection(self, twitterhandle):
         self.cursor.execute(f"SELECT GROUP_CONCAT(DISTINCT t2_username) as t2_usernames FROM {T2_CURRENT_USERS_TABLE} JOIN {NEW_WAITLIST_CONNECTION_TABLE} on twitter_username = user_handle AND followed_by_handle=?", (twitterhandle,))
         return self.cursor.fetchall()
