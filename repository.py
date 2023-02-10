@@ -49,6 +49,13 @@ class T2Repository:
         self.cursor.execute(f"SELECT name FROM {TWITTER_USERS_TABLE} WHERE username = ?", (twitter,))
         return self.cursor.fetchone()
 
+    def get_email_from_t2handle(self, t2handle):
+        """getting email address from waiting list using t2 handle information"""
+        self.cursor.execute(f"SELECT `Email Address` FROM {NEW_WAITLIST_TABLE} WHERE `#1 choice` == ? OR `#2 choice` == ? OR `#3 choice`==?",
+                            (t2handle, t2handle, t2handle),
+        )
+        return self.cursor.fetchone()
+
     
     def get_twitter_user_by_username(self, twitter):
         self.cursor.execute(f"SELECT * FROM {TWITTER_USERS_TABLE} WHERE username = ?", (twitter,))

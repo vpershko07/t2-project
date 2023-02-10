@@ -90,9 +90,10 @@ def main(t2handle, twitterhandle):
         pre_recommendations_list_text = "Once you’ve signed up here are some recommendations for you for people to follow:"
         list_of_recommendations_text = '\n'.join(list_of_recommendations)
 
-
+    email_address = repository.get_email_from_t2handle(t2handle)['Email Address'] if repository.get_email_from_t2handle(t2handle) is not None else "<email-address>" 
     
-    message = f"""   
+    message = f"""
+To: {email_address}   
 Subject: T2 Invite: @{t2handle}
 
 {first_name} -
