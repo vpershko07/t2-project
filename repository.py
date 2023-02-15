@@ -6,6 +6,7 @@ from consts import (
     NEW_WAITLIST_TABLE,
     ALREADY_CRAWLED_TABLE,
     NEW_WAITLIST_CONNECTION_TABLE,
+    TWITTER_VERIFIED_TABLE
 )
 
 from datetime import datetime
@@ -41,6 +42,10 @@ class T2Repository:
         self.cursor.execute(f"SELECT GROUP_CONCAT(DISTINCT t2_username) as t2_usernames FROM {T2_CURRENT_USERS_TABLE} JOIN {CONNECTIVITY_TABLE} on twitter_username = target_handle AND user_twitter_handle=?", (twitterhandle,))
         return self.cursor.fetchall()
 
+    def get_verified_profiles_in_waitlist(self):
+        self.cursor.execute(f"SELECT DISTINCT * from {TWITTER_USERS_TABLE} WHERE (twitter_id IN (SELECT  id FROM {TWITTER_VERIFIED_TABLE}) AND username IN (SELECT `What is your handle on Twitter?` FROM {NEW_WAITLIST_TABLE}))")
+        return self.cursor.fetchall()    
+    
     def get_t2_user_by_twitter_username(self, twitter):
         self.cursor.execute(f"SELECT * FROM {T2_CURRENT_USERS_TABLE} WHERE twitter_username = ?", (twitter,))
         return self.cursor.fetchone()
