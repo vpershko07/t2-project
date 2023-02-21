@@ -54,6 +54,18 @@ class T2Repository:
         self.cursor.execute(f"SELECT name FROM {TWITTER_USERS_TABLE} WHERE username = ?", (twitter,))
         return self.cursor.fetchone()
 
+    def get_twitter_info_by_twitter_username(self, twitter):
+        self.cursor.execute(f"SELECT `public_metrics.tweet_count`,`public_metrics.following_count`, `public_metrics.followers_count` FROM {TWITTER_USERS_TABLE} WHERE username = ?", (twitter,))
+        return self.cursor.fetchone()
+
+    def get_twitter_info_by_twitter_id(self, twitter_id):
+        self.cursor.execute(f"SELECT `public_metrics.tweet_count`,`public_metrics.following_count`, `public_metrics.followers_count` FROM {TWITTER_USERS_TABLE} WHERE twitter_id = ?", (twitter_id,))
+        return self.cursor.fetchone()
+    
+    def is_user_profile_exist_by_id(self, twitter_id):
+        self.cursor.execute(f"SELECT count(*) as existing FROM {TWITTER_USERS_TABLE} WHERE twitter_id=?",(twitter_id,))
+        return self.cursor.fetchone()['existing']    
+
     def get_email_from_t2handle(self, t2handle):
         """getting email address from waiting list using t2 handle information"""
         self.cursor.execute(f"SELECT `Email Address` FROM {NEW_WAITLIST_TABLE} WHERE `#1 choice` == ? OR `#2 choice` == ? OR `#3 choice`==?",
