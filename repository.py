@@ -37,7 +37,12 @@ class T2Repository:
     def find_recommondation_new_waitlist_connection(self, twitterhandle):
         self.cursor.execute(f"SELECT GROUP_CONCAT(DISTINCT t2_username) as t2_usernames FROM {T2_CURRENT_USERS_TABLE} JOIN {NEW_WAITLIST_CONNECTION_TABLE} on twitter_username = user_handle AND followed_by_handle=?", (twitterhandle,))
         return self.cursor.fetchall()
+    
+    def find_connections_in_connectivity_data(self):
+        self.cursor.execute(f"SELECT user_twitter_handle, GROUP_CONCAT(DISTINCT target_handle) AS target_handles, GROUP_CONCAT(DISTINCT CAST(CAST(`target_twitter_info.twitter_id` AS INT) AS TEXT)) AS target_ids FROM {CONNECTIVITY_TABLE} GROUP BY user_twitter_handle")
+        return self.cursor.fetchall()
 
+    
     def find_recommondation_connection_list(self, twitterhandle):
         self.cursor.execute(f"SELECT GROUP_CONCAT(DISTINCT t2_username) as t2_usernames FROM {T2_CURRENT_USERS_TABLE} JOIN {CONNECTIVITY_TABLE} on twitter_username = target_handle AND user_twitter_handle=?", (twitterhandle,))
         return self.cursor.fetchall()
@@ -174,11 +179,18 @@ class T2Repository:
 
     def insert_to_new_waitlist_connections(self,user_name,user_id,follower_name,follower_id):
         """insert to new waitlist connections table"""
-        self.cursor.execute(f"INSERT INTO {NEW_WAITLIST_CONNECTION_TABLE}(user_handle,user_id,followed_by_handle,followed_by_id) VALUES (?,?,?,?)""",
-                            (user_name, user_id,follower_name,follower_id),
+        self.cursor.execute(f"INSERT INTO {NEW_WAITLIST_CONNECTION_TABLE}(id, user_handle,user_id,followed_by_handle,followed_by_id) VALUES (?,?,?,?,?)""",
+                            (f"{user_id}{follower_id}",user_name, user_id,follower_name,follower_id),
                                 )
 
         self.db_connection.commit()
+        
+    def check_in_new_waitlist_connections(self,user_name,user_id,follower_name,follower_id):
+        """check if connection in DB or not"""
+        self.cursor.execute(f"SELECT COUNT(*) as existing FROM {NEW_WAITLIST_CONNECTION_TABLE} WHERE user_handle = ? AND user_id = ?  AND followed_by_handle = ? AND followed_by_id=?""",
+                            (user_name, user_id,follower_name,follower_id),
+                                )
+        return self.cursor.fetchone()['existing']
 
 
     def get_all_twitter_users(self):
