@@ -78,6 +78,13 @@ class T2Repository:
         )
         return self.cursor.fetchone()
 
+    def get_email_from_twitter_handle(self, twitter_handle):
+        """getting email address from waiting list using twitter handle information"""
+        self.cursor.execute(f"SELECT `Email Address` FROM {NEW_WAITLIST_TABLE} WHERE `What is your handle on Twitter?` == ?",
+                            (twitter_handle,),
+        )
+        return self.cursor.fetchone()    
+    
     
     def get_twitter_user_by_username(self, twitter):
         self.cursor.execute(f"SELECT * FROM {TWITTER_USERS_TABLE} WHERE username = ?", (twitter,))

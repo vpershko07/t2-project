@@ -89,8 +89,14 @@ def main(t2handle, twitterhandle):
     else:
         pre_recommendations_list_text = "Once you’ve signed up here are some recommendations for you for people to follow:"
         list_of_recommendations_text = '\n'.join(list_of_recommendations)
-
-    email_address = repository.get_email_from_t2handle(t2handle)['Email Address'] if repository.get_email_from_t2handle(t2handle) is not None else "<email-address>" 
+    
+    email_address = None
+    if twitterhandle is not None:
+        email_query = repository.get_email_from_twitter_handle(twitterhandle)
+        email_address = email_query['Email Address'] if email_query is not None else None
+    
+    if email_address is None:
+        email_address = repository.get_email_from_t2handle(t2handle)['Email Address'] if repository.get_email_from_t2handle(t2handle) is not None else "<email-address>" 
     
     message = f"""
 To: {email_address}   
