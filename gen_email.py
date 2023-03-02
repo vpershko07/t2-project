@@ -6,8 +6,11 @@ from repository import T2Repository
 import hashlib
 from load_tweepy_api import get_tweepy_api
 
-def sha1_key(t2handle):
-    return hashlib.sha1(f"{t2handle}7e##$83R73df1bFf3C9548".encode('utf-8')).hexdigest()
+def sha1_key(t2handle, backuphandle=None):
+    if backuphandle is None:
+        return hashlib.sha1(f"{t2handle}7e##$83R73df1bFf3C9548".encode('utf-8')).hexdigest()
+    else:
+        return hashlib.sha1(f"{t2handle}7e##$83R73df1bFf3C9548{backuphandle}".encode('utf-8')).hexdigest()
 
 
 def rot5_encode(string):
@@ -33,7 +36,8 @@ def get_user_profile(twitter_handle, api):
 @click.command(help="t2 handle")
 @click.option("--t2handle", help="t2 handle")
 @click.option("--twitterhandle", help="twitter handle", required= False)
-def main(t2handle, twitterhandle):
+@click.option("--backuphandle", help="backup handle", required= False)
+def main(t2handle, twitterhandle, backuphandle):
     repository = T2Repository(get_db_connection(DB_PATH))
     
     list_of_recommendations = []
@@ -79,8 +83,14 @@ def main(t2handle, twitterhandle):
         list_of_recommendations.extend([f"https://t2.social/{t2_handle}" for t2_handle in recommendation_connectivity_data if t2_handle not in recommendation_newwatlist_connectons])
 
 
-    KEY_SEE_BELOW = sha1_key(t2handle) # sha1 key for the t2handle
-    link = f"https://t2.social/signup?handle={t2handle}&ph={PH_SEE_BELOW}&pid={PID_SEE_BELOW}&key={KEY_SEE_BELOW}" if twitterhandle is not None else f"https://t2.social/signup?handle={t2handle}&key={KEY_SEE_BELOW}"
+    link=""
+    if backuphandle is None:
+        KEY_SEE_BELOW = sha1_key(t2handle) # sha1 key for the t2handle
+        link = f"https://t2.social/signup?handle={t2handle}&ph={PH_SEE_BELOW}&pid={PID_SEE_BELOW}&key={KEY_SEE_BELOW}" if twitterhandle is not None else f"https://t2.social/signup?handle={t2handle}&key={KEY_SEE_BELOW}"
+    else:
+        KEY_SEE_BELOW = sha1_key(t2handle, backuphandle) # sha1 key for the t2handle
+        link = f"https://t2.social/signup?handle={t2handle}&bh={backuphandle}&ph={PH_SEE_BELOW}&pid={PID_SEE_BELOW}&key={KEY_SEE_BELOW}" if twitterhandle is not None else f"https://t2.social/signup?handle={t2handle}&bh={backuphandle}&key={KEY_SEE_BELOW}"
+        print(f"link {link}")
 
     # check whether there is a connections or not.
     if not list_of_recommendations:
@@ -89,15 +99,15 @@ def main(t2handle, twitterhandle):
     else:
         pre_recommendations_list_text = "Once you’ve signed up here are some recommendations for you for people to follow:"
         list_of_recommendations_text = '\n'.join(list_of_recommendations)
-    
+
     email_address = None
     if twitterhandle is not None:
         email_query = repository.get_email_from_twitter_handle(twitterhandle)
         email_address = email_query['Email Address'] if email_query is not None else None
-    
+
     if email_address is None:
         email_address = repository.get_email_from_t2handle(t2handle)['Email Address'] if repository.get_email_from_t2handle(t2handle) is not None else "<email-address>" 
-    
+        
     message = f"""
 To: {email_address}   
 Subject: T2 Invite: @{t2handle}
